@@ -22,3 +22,5 @@ Execute sudo ./setup.sh to install dependencies and apply baseline hardening mea
 Launch the Interactive Tool:
 Run python3 elite.py to access the GUI for ongoing security management.
 Embrace elite-grade security hardening with Vanguard Elite and fortify your Debian-based server with a trusted, automated solution.
+
+![image](https://github.com/user-attachments/assets/fd48677b-b460-4ea9-867b-3de4d2be2eb2)
