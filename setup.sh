@@ -1,23 +1,13 @@
 #!/bin/bash
-# Vanguard Elite - Setup Script
-# This script installs all dependencies and applies base hardening measures on Debian‑based servers.
-# It installs system packages, Python libraries, configures UFW, Fail2Ban, AppArmor,
-# sets up cron jobs, and applies additional security measures.
-#
-# Core libraries: shlex, subprocess, sys, os, logging, threading, datetime, pexpect, shutil
-# GUI: tkinter (with ttk)
-# SEC/MONITOR: lynis, selinux, fail2ban, ufw, apparmor, firejail, debsums, tcpd
-# PKG MANAGER/TOOLS: requests, setuptools
-#
-# Project: Vanguard Elite
-# Improved by AI
-#
-# Run this script as root (sudo ./setup.sh)
+# Vanguard Elite - Setup Script (Updated for Enhanced Security)
+# This script installs dependencies and applies base hardening measures on Debian‑based servers.
+# It enforces secure file permissions, minimizes unnecessary package installation,
+# and creates secure cron jobs for system audits and updates.
 
 set -euo pipefail
 IFS=$'\n\t'
 
-# Ensure script is run as root
+# Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root. Please use sudo."
     exit 1
@@ -29,12 +19,16 @@ if ! grep -qiE "debian|ubuntu" /etc/os-release; then
     exit 1
 fi
 
+# Secure the script file itself
+chmod 700 "${BASH_SOURCE[0]}"
+
 echo "---------------------------------------------"
 echo " Vanguard Elite Setup Initialization"
 echo "---------------------------------------------"
 
 echo "[+] Updating package repositories..."
-apt-get update
+# (APT by default verifies packages using GPG; ensure your sources list is secure.)
+apt-get update 
 
 echo "[+] Installing essential system packages..."
 ESSENTIAL_PACKAGES=(
@@ -60,49 +54,47 @@ ESSENTIAL_PACKAGES=(
 for pkg in "${ESSENTIAL_PACKAGES[@]}"; do
     if ! dpkg -s "$pkg" &>/dev/null; then
         echo "Installing $pkg..."
-        apt-get install -y "$pkg"
+        apt-get install -y --no-install-recommends "$pkg"
     else
         echo "$pkg is already installed."
     fi
 done
 
-echo "[+] Upgrading pip and installing required Python libraries..."
+echo "[+] Upgrading pip and installing required Python libraries securely..."
 python3 -m pip install --upgrade pip setuptools requests pexpect
 
-# Generate a requirements.txt file for record-keeping
+# Save Python dependencies with restricted permissions
 python3 -m pip freeze > requirements.txt
+chmod 600 requirements.txt
 echo "[+] Python dependencies installed. See requirements.txt for details."
 
-# Configure UFW firewall with secure defaults
-echo "[+] Configuring UFW firewall..."
+echo "[+] Configuring UFW firewall with secure defaults..."
 ufw default deny incoming
 ufw default allow outgoing
-# Allow essential services: SSH (port 22)
+# Allow SSH (port 22) only:
 ufw allow 22/tcp
 ufw --force enable
-ufw reload
+ufw reload || echo "Warning: UFW reload may have encountered an issue."
 
-# Enable Fail2Ban and AppArmor services
-echo "[+] Enabling Fail2Ban and AppArmor..."
+echo "[+] Enabling Fail2Ban and AppArmor services..."
 systemctl enable --now fail2ban
 systemctl enable --now apparmor
 
-# Setup cron jobs for regular security audits and system updates
-echo "[+] Configuring cron jobs..."
-CRON_JOB_FILE="/tmp/vanguard_cron_jobs"
+echo "[+] Configuring secure cron jobs..."
+# Use a secure location for temporary cron configuration
+CRON_JOB_FILE="/root/vanguard_cron_jobs"
 cat <<EOF > "$CRON_JOB_FILE"
 0 1 * * * lynis audit system --cronjob >> /var/log/lynis_cron.log 2>&1
 0 2 * * * apt-get update && apt-get upgrade -y
 EOF
+chmod 600 "$CRON_JOB_FILE"
 crontab "$CRON_JOB_FILE"
 rm -f "$CRON_JOB_FILE"
 
-# Disable USB storage by blacklisting the module (optional but recommended)
-echo "[+] Disabling USB storage..."
+echo "[+] Disabling USB storage (if not required)..."
 echo 'blacklist usb-storage' > /etc/modprobe.d/usb-storage.conf
-modprobe -r usb-storage || echo "[-] USB storage module could not be unloaded; it might be in use."
+modprobe -r usb-storage || echo "[-] Warning: Could not unload USB storage module; it may be in active use."
 
-# Perform a final system update and upgrade
 echo "[+] Performing final system update..."
 apt-get update && apt-get upgrade -y
 
