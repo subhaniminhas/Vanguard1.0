@@ -1,4 +1,4 @@
-Vanguard Elite is a robust, self-contained security hardening suite designed exclusively for Debian‑based systems. Inspired by the highest security standards typically found in elite proxy environments, Vanguard Elite automates the installation and configuration of essential security tools and best practices to ensure your server remains resilient against modern threats.
+Vanguard Elite is a robust, self-contained security hardening suite designed exclusively for Debian‑based systems, improved by the AI. Inspired by the highest security standards typically found in elite proxy environments, Vanguard Elite automates the installation and configuration of essential security tools and best practices to ensure your server remains resilient against modern threats.
 
 Key Features
 Automated Dependency Management:
