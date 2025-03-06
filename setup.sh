@@ -1,8 +1,14 @@
 #!/bin/bash
 # Vanguard Elite - Setup Script (Updated for Enhanced Security)
-# This script installs dependencies and applies base hardening measures on Debian‑based servers.
-# It enforces secure file permissions, minimizes unnecessary package installation,
-# and creates secure cron jobs for system audits and updates.
+# This script installs all required dependencies and applies base hardening measures
+# on Debian‑based servers using AppArmor (SELinux is not used).
+# It also sets up secure cron jobs for system audits and updates.
+#
+# IMPORTANT:
+#   For servers without a graphical display (headless):
+#      Run "python3 elite_cli.py"
+#   For servers with an X11 display:
+#      Run "python3 elite.py"
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -27,8 +33,7 @@ echo " Vanguard Elite Setup Initialization"
 echo "---------------------------------------------"
 
 echo "[+] Updating package repositories..."
-# (APT by default verifies packages using GPG; ensure your sources list is secure.)
-apt-get update 
+apt-get update
 
 echo "[+] Installing essential system packages..."
 ESSENTIAL_PACKAGES=(
@@ -47,8 +52,6 @@ ESSENTIAL_PACKAGES=(
     wget
     curl
     git
-    selinux-basics
-    selinux-policy-default
     macchanger
 )
 for pkg in "${ESSENTIAL_PACKAGES[@]}"; do
@@ -61,7 +64,7 @@ for pkg in "${ESSENTIAL_PACKAGES[@]}"; do
 done
 
 echo "[+] Upgrading pip and installing required Python libraries securely..."
-python3 -m pip install --upgrade pip setuptools requests pexpect
+python3 -m pip install --upgrade pip setuptools requests pexpect --break-system-packages
 
 # Save Python dependencies with restricted permissions
 python3 -m pip freeze > requirements.txt
@@ -100,5 +103,6 @@ apt-get update && apt-get upgrade -y
 
 echo "---------------------------------------------"
 echo "[+] Vanguard Elite Setup Complete!"
-echo "     You can now run the interactive tool with: python3 elite.py"
+echo "     For headless servers, run: python3 elite_cli.py"
+echo "     For X11/graphical environments, run: python3 elite.py"
 echo "---------------------------------------------"
