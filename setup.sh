@@ -81,7 +81,9 @@ apt-get update
 apt-get install -y gnupg gnupg2
 
 echo "[+] Adding the Lynis repository..."
-echo "deb https://packages.cisofy.com/community/lynis/deb/ stable main" | tee /etc/apt/sources.list.d/cisofy-lynis.list
+curl -fsSL https://packages.cisofy.com/keys/cisofy-software-public.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/cisofy-software-public.gpg
+echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/cisofy-software-public.gpg] https://packages.cisofy.com/community/lynis/deb/ stable main" | sudo tee /etc/apt/sources.list.d/cisofy-lynis.list
+sudo apt install apt-transport-https -y
 echo "[+] Running an apt update after adding the Lynis repo..."
 apt update
 
