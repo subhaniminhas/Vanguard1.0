@@ -3,7 +3,9 @@ WARNING! Before running ./setup.sh, please make sure you have the Lynis repo ins
 ======================================================
 
 curl -fsSL https://packages.cisofy.com/keys/cisofy-software-public.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/cisofy-software-public.gpg
+
 echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/cisofy-software-public.gpg] https://packages.cisofy.com/community/lynis/deb/ stable main" | sudo tee /etc/apt/sources.list.d/cisofy-lynis.list
+
 sudo apt install apt-transport-https
 
 ======================================================
