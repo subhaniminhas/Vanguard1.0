@@ -1,15 +1,3 @@
-WARNING! Before running ./setup.sh, please make sure you have the Lynis repo installed. If not, you can install it like this:
-
-======================================================
-
-curl -fsSL https://packages.cisofy.com/keys/cisofy-software-public.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/cisofy-software-public.gpg
-
-echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/cisofy-software-public.gpg] https://packages.cisofy.com/community/lynis/deb/ stable main" | sudo tee /etc/apt/sources.list.d/cisofy-lynis.list
-
-sudo apt install apt-transport-https
-
-======================================================
-
 Vanguard Elite is a robust, self-contained security hardening suite designed exclusively for Debian‑based systems, improved by the AI. Inspired by the highest security standards typically found in elite proxy environments, Vanguard Elite automates the installation and configuration of essential security tools and best practices to ensure your server remains resilient against modern threats.
 
 ![image](https://github.com/user-attachments/assets/fd48677b-b460-4ea9-867b-3de4d2be2eb2)
